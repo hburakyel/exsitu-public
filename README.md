@@ -24,6 +24,6 @@ Framework: Next.js (App Router)
 
 Language: TypeScript
 
-Styling: Radix UITailwind CSS / PostCSS
+Styling: Radix UI, Tailwind CSS / PostCSS
 
 License: Committed to MIT License.
