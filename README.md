@@ -25,7 +25,7 @@ The infrastructure is built to handle significant institutional data loads:
 Relational Discovery: Functions as a decentralized discovery layer, allowing users to navigate artifacts, geolocated hpyherlinks not just by institution, but by their spatial and historical relationships.
 
 Tech Stack
-Layer	Technology
+
 Frontend	Next.js (App Router), TypeScript, Deck.gl
 Styling	Radix UI, Tailwind CSS
 Backend	Strapi v4, Node.js
