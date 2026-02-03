@@ -32,3 +32,6 @@ Backend	Strapi v4, Node.js
 Database	PostgreSQL + PostGIS
 Pipeline	Python (Data Normalization & Resolution)
 License	MIT License (Open Source)
+
+Note: Ex Situ is currently transitioning its mapping engine to ensure full alignment with open-source digital commons principles. While the initial prototype relies on Mapbox GL JS, the development roadmap includes a migration to MapLibre GL JS and self-hosted vector tiles. This shift is designed to ensure the platform remains free of proprietary "pay-per-load" dependencies and maintains 100% data sovereignty for cultural heritage research.
+
