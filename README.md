@@ -1,29 +1,32 @@
 Ex Situ: Relational Spatial Index
 
-A spatial digital commons platform for cultural heritage documentation, mapping relational data across institutional archives.
+https://exsitu.app
 
-Core Architecture
+Ex Situ is a spatial digital commons platform and geospatial infrastructure designed to resolve fragmented cultural heritage metadata into a unified, machine-readable index. By transforming siloed institutional hyperlinks into standardized geospatial data, Ex Situ enables the visualization and analysis of artifact movement across global collections.
 
-Frontend: Built with Next.js and TypeScript (92%) for high-performance spatial indexing.
+Architecture
+Ex Situ employs a decoupled architecture designed for high-throughput data resolution and low-latency visualization:
 
-Data Management: Integrated with a Strapi v4 Community Edition backend.
+Modular ETL Pipeline: A custom Python-based Extract, Transform, Load (ETL) pipeline that ingests heterogeneous institutional metadata and resolves them into standardized geospatial coordinates.
 
-Scale: Architected to handle high-density datasets, currently indexing 132,854+ museum objects.
+Headless Backend: Powered by Strapi v4 (Community Edition) on a PostgreSQL/PostGIS database, optimized for complex relational and spatial queries.
 
-Project Goals
+High-Performance Frontend: A Next.js application utilizing Deck.gl for large-scale WebGL-based geospatial rendering.
 
-Spatial Indexing: Providing a relational framework for mapping artifacts across physical and digital domains.
+Sovereign Hosting: Fully deployed on European infrastructure (Hetzner) to ensure data sovereignty and compliance with open-source digital commons principles.
 
-Open Access: Committed to Free and Open Source Software (FOSS) principles to serve the public interest.
+Scale & Provenance
+The infrastructure is built to handle significant institutional data loads:
 
-Infrastructure: Hosted on sovereign European infrastructure (Hetzner).
+132,854+ Entries: Successfully resolved and geolocated museum objects from diverse international collections.
 
-Technical Stack
+Relational Discovery: Functions as a decentralized discovery layer, allowing users to navigate artifacts not just by institution, but by their spatial and historical relationships.
 
-Framework: Next.js (App Router)
-
-Language: TypeScript
-
-Styling: Radix UI, Tailwind CSS / PostCSS
-
-License: Committed to MIT License.
+Tech Stack
+Layer	Technology
+Frontend	Next.js (App Router), TypeScript, Deck.gl
+Styling	Radix UI, Tailwind CSS
+Backend	Strapi v4, Node.js
+Database	PostgreSQL + PostGIS
+Pipeline	Python (Data Normalization & Resolution)
+License	MIT License (Open Source)
