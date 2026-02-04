@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
-import { ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon, Cross2Icon } from "@radix-ui/react-icons"
 import { Button } from "@/components/ui/button"
 import type { MuseumObject } from "../types"
 import { Spinner } from "@/components/ui/spinner"
@@ -180,11 +180,11 @@ export default function ImageGallery({
 
           <div style={{ display: "flex", gap: "8px" }}>
             <Button variant="ghost" size="icon" onClick={handlePrevious} className={isMobile ? "h-8 w-8" : "h-6 w-6"}>
-              <ChevronLeft className={isMobile ? "h-4 w-4" : "h-3 w-3"} />
+              <ChevronLeftIcon className="h-5 w-5" />
             </Button>
 
             <Button variant="ghost" size="icon" onClick={handleNext} className={isMobile ? "h-8 w-8" : "h-6 w-6"}>
-              <ChevronRight className={isMobile ? "h-4 w-4" : "h-3 w-3"} />
+              <ChevronRightIcon className="h-5 w-5" />
             </Button>
 
             {/* External link button */}
@@ -201,12 +201,12 @@ export default function ImageGallery({
                 }}
                 className={isMobile ? "h-8 w-8" : "h-6 w-6"}
               >
-                <ExternalLink className={isMobile ? "h-4 w-4" : "h-3 w-3"} />
+                <ExternalLinkIcon className="h-5 w-5" />
               </Button>
             )}
 
             <Button variant="ghost" size="icon" onClick={onClose} className={isMobile ? "h-8 w-8" : "h-6 w-6"}>
-              <X className={isMobile ? "h-4 w-4" : "h-3 w-3"} />
+              <Cross2Icon className="h-5 w-5" />
             </Button>
           </div>
         </div>

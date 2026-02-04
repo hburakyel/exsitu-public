@@ -10,9 +10,16 @@ interface ArcInfoPanelProps {
   viewMode: "grid" | "list"
   onToggleViewMode: () => void
   className?: string
+  onArcClick?: (lat: number, lng: number, zoom?: number) => void
 }
 
-export default function ArcInfoPanel({ objects, viewMode, onToggleViewMode, className = "" }: ArcInfoPanelProps) {
+export default function ArcInfoPanel({
+  objects,
+  viewMode,
+  onToggleViewMode,
+  className = "",
+  onArcClick,
+}: ArcInfoPanelProps) {
   const [isCollapsed, setIsCollapsed] = useState(true) // Initially collapsed
   const [isSticky, setIsSticky] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -31,6 +38,10 @@ export default function ArcInfoPanel({ objects, viewMode, onToggleViewMode, clas
       const toCity = obj.attributes.institution_city_en || ""
       const toCountry = obj.attributes.institution_country_en || ""
 
+      // Get coordinates
+      const fromLat = obj.attributes.latitude
+      const fromLng = obj.attributes.longitude
+
       // Create a key that includes all location info
       const key = `${obj.attributes.place_name}-${obj.attributes.institution_place}`
 
@@ -40,6 +51,8 @@ export default function ArcInfoPanel({ objects, viewMode, onToggleViewMode, clas
           to: obj.attributes.institution_place,
           fromCity,
           fromCountry,
+          fromLat,
+          fromLng,
           toCity,
           toCountry,
           count: 1,
@@ -153,7 +166,18 @@ export default function ArcInfoPanel({ objects, viewMode, onToggleViewMode, clas
               <h3 className="text-xs panel-text-muted mb-1">Arc</h3>
               <div className="space-y-0.5">
                 {arcs.map((arc, index) => (
-                  <div key={index} className="flex flex-col">
+                  <div
+                    key={index}
+                    className={`flex flex-col rounded-sm p-1 -mx-1 transition-colors ${onArcClick && arc.fromLat && arc.fromLng
+                        ? "cursor-pointer hover:bg-slate-100"
+                        : ""
+                      }`}
+                    onClick={() => {
+                      if (onArcClick && arc.fromLat && arc.fromLng) {
+                        onArcClick(arc.fromLat, arc.fromLng, 8)
+                      }
+                    }}
+                  >
                     <div className="flex justify-between">
                       <span className="truncate max-w-[70%]">
                         {arc.from} → {arc.to}
@@ -175,7 +199,7 @@ export default function ArcInfoPanel({ objects, viewMode, onToggleViewMode, clas
               <h3 className="text-xs panel-text-muted mb-1"> Collection</h3>
               <div className="space-y-0.5">
                 {institutions.map((inst, index) => (
-                  <div key={index} className="flex flex-col">
+                  <div key={index} className="flex flex-col p-1 -mx-1">
                     <div className="flex justify-between">
                       <span className="truncate max-w-[70%]">{inst.name}</span>
                       <span className="ml-2 panel-text-muted">{inst.count}</span>
@@ -195,7 +219,7 @@ export default function ArcInfoPanel({ objects, viewMode, onToggleViewMode, clas
               <h3 className="text-xs panel-text-muted mb-1">From</h3>
               <div className="space-y-0.5">
                 {origins.map((origin, index) => (
-                  <div key={index} className="flex flex-col">
+                  <div key={index} className="flex flex-col p-1 -mx-1">
                     <div className="flex justify-between">
                       <span className="truncate max-w-[70%]">{origin.name}</span>
                       <span className="ml-2 panel-text-muted">{origin.count}</span>

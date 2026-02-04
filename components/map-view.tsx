@@ -4,13 +4,14 @@ import type React from "react"
 
 import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle, useMemo } from "react"
 import mapboxgl from "mapbox-gl"
+import maplibregl from "maplibre-gl"
 import { MapboxOverlay } from "@deck.gl/mapbox"
 import type { MuseumObject, MapBounds } from "../types"
 import debounce from "lodash/debounce"
 // Import the arc utilities
 import type { ClusteredArc } from "../lib/arc-utils"
 // Update the imports to include Search but remove Globe from here since we'll use it in the map controls
-import { ExclamationTriangleIcon, ReloadIcon, MagnifyingGlassIcon, ChevronDownIcon, ChevronUpIcon, UpdateIcon } from "@radix-ui/react-icons"
+import { ExclamationTriangleIcon, ReloadIcon, MagnifyingGlassIcon, ChevronDownIcon, ChevronUpIcon, UpdateIcon, LayersIcon, GlobeIcon } from "@radix-ui/react-icons"
 import { Button } from "@/components/ui/button"
 // Import the countUniqueArcs function at the top of the file
 import { countUniqueArcs } from "../lib/arc-utils"
@@ -112,6 +113,7 @@ const MapView = forwardRef<{ map: mapboxgl.Map | null }, MapViewProps>(
     const [mapToken, setMapToken] = useState<string | null>(null)
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const isMobile = useMediaQuery("(max-width: 768px)")
+    const [mapProvider, setMapProvider] = useState<"mapbox" | "maplibre">("mapbox")
 
     const [showLayerControls, setShowLayerControls] = useState(false)
     const [showArcs, setShowArcs] = useState(false)
@@ -269,22 +271,22 @@ const MapView = forwardRef<{ map: mapboxgl.Map | null }, MapViewProps>(
       })
       mapInstance.addControl(nav, "bottom-left")
 
-      // Add a custom control for the world view button
-      class WorldViewControl {
+      // Add a custom control for the globe view button
+      class GlobeViewControl {
         _map: mapboxgl.Map | null = null
         _container: HTMLDivElement | null = null
 
         onAdd(map: mapboxgl.Map) {
           this._map = map
           this._container = document.createElement("div")
-          this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group world-view-control"
+          this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group"
 
-          // Global view button
+          // Global view button with Radix UI GlobeIcon
           const globalViewButton = document.createElement("button")
-          globalViewButton.className = "mapboxgl-ctrl-globe"
+          globalViewButton.className = "mapboxgl-ctrl-icon"
           globalViewButton.setAttribute("aria-label", "Global View")
           globalViewButton.innerHTML =
-            '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe h-5 w-5"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'
+            '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.49996 1.80002C4.35194 1.80002 1.79996 4.352 1.79996 7.50002C1.79996 10.648 4.35194 13.2 7.49996 13.2C10.648 13.2 13.2 10.648 13.2 7.50002C13.2 4.352 10.648 1.80002 7.49996 1.80002ZM0.899963 7.50002C0.899963 3.85494 3.85488 0.900024 7.49996 0.900024C11.145 0.900024 14.1 3.85494 14.1 7.50002C14.1 11.1451 11.145 14.1 7.49996 14.1C3.85488 14.1 0.899963 11.1451 0.899963 7.50002Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path><path d="M13.4999 7.89998H1.49994V7.09998H13.4999V7.89998Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path><path d="M7.09991 13.5V1.5H7.89991V13.5H7.09991zM10.375 7.49998C10.375 5.32724 9.59364 3.17778 8.06183 1.75656L8.53793 1.24341C10.2396 2.82218 11.075 5.17273 11.075 7.49998 11.075 9.82724 10.2396 12.1778 8.53793 13.7566L8.06183 13.2434C9.59364 11.8222 10.375 9.67273 10.375 7.49998zM3.99969 7.5C3.99969 5.17611 4.80786 2.82678 6.45768 1.24719L6.94177 1.75281C5.4582 3.17323 4.69969 5.32389 4.69969 7.5 4.6997 9.67611 5.45822 11.8268 6.94179 13.2472L6.45769 13.7528C4.80788 12.1732 3.9997 9.8239 3.99969 7.5z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path><path d="M7.49996 3.95801C9.66928 3.95801 11.8753 4.35915 13.3706 5.19448 13.5394 5.28875 13.5998 5.50197 13.5055 5.67073 13.4113 5.83948 13.198 5.89987 13.0293 5.8056 11.6794 5.05155 9.60799 4.65801 7.49996 4.65801 5.39192 4.65801 3.32052 5.05155 1.97064 5.8056 1.80188 5.89987 1.58866 5.83948 1.49439 5.67073 1.40013 5.50197 1.46051 5.28875 1.62927 5.19448 3.12466 4.35915 5.33063 3.95801 7.49996 3.95801zM7.49996 10.85C9.66928 10.85 11.8753 10.4488 13.3706 9.6135 13.5394 9.51924 13.5998 9.30601 13.5055 9.13726 13.4113 8.9685 13.198 8.90812 13.0293 9.00238 11.6794 9.75643 9.60799 10.15 7.49996 10.15 5.39192 10.15 3.32052 9.75643 1.97064 9.00239 1.80188 8.90812 1.58866 8.9685 1.49439 9.13726 1.40013 9.30601 1.46051 9.51924 1.62927 9.6135 3.12466 10.4488 5.33063 10.85 7.49996 10.85z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>'
           globalViewButton.addEventListener("click", () => {
             if (this._map) {
               this._map.flyTo({
@@ -308,8 +310,126 @@ const MapView = forwardRef<{ map: mapboxgl.Map | null }, MapViewProps>(
         }
       }
 
-      // Add the world view control
-      mapInstance.addControl(new WorldViewControl(), "bottom-left")
+      // Add a custom control for the layers toggle button with dropdown
+      class LayersControl {
+        _map: mapboxgl.Map | null = null
+        _container: HTMLDivElement | null = null
+        _dropdown: HTMLDivElement | null = null
+        _isOpen: boolean = false
+
+        onAdd(map: mapboxgl.Map) {
+          this._map = map
+          this._container = document.createElement("div")
+          this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group"
+          this._container.style.position = "relative"
+
+          // Map provider toggle button with Radix UI LayersIcon
+          const layersButton = document.createElement("button")
+          layersButton.className = "mapboxgl-ctrl-icon"
+          layersButton.setAttribute("aria-label", "Select Map Provider")
+          layersButton.innerHTML =
+            '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 0.5L0.5 4.5L7.5 8.5L14.5 4.5L7.5 0.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M0.5 10.5L7.5 14.5L14.5 10.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M0.5 7.5L7.5 11.5L14.5 7.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+
+          // Create dropdown menu
+          this._dropdown = document.createElement("div")
+          this._dropdown.className = "map-provider-dropdown"
+          this._dropdown.style.display = "none"
+
+          // Mapbox option
+          const mapboxOption = document.createElement("div")
+          mapboxOption.className = "map-provider-option"
+          mapboxOption.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0.900024 7.50002C0.900024 3.85495 3.85495 0.900024 7.50002 0.900024C11.1451 0.900024 14.1 3.85495 14.1 7.50002C14.1 11.1451 11.1451 14.1 7.50002 14.1C3.85495 14.1 0.900024 11.1451 0.900024 7.50002ZM7.50002 1.80002C4.35201 1.80002 1.80002 4.35201 1.80002 7.50002C1.80002 10.648 4.35201 13.2 7.50002 13.2C10.648 13.2 13.2 10.648 13.2 7.50002C13.2 4.35201 10.648 1.80002 7.50002 1.80002Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+            Mapbox
+          `
+          mapboxOption.addEventListener("click", () => {
+            this.selectProvider("mapbox")
+          })
+
+          // MapLibre option
+          const maplibreOption = document.createElement("div")
+          maplibreOption.className = "map-provider-option"
+          maplibreOption.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0.900024 7.50002C0.900024 3.85495 3.85495 0.900024 7.50002 0.900024C11.1451 0.900024 14.1 3.85495 14.1 7.50002C14.1 11.1451 11.1451 14.1 7.50002 14.1C3.85495 14.1 0.900024 11.1451 0.900024 7.50002ZM7.50002 1.80002C4.35201 1.80002 1.80002 4.35201 1.80002 7.50002C1.80002 10.648 4.35201 13.2 7.50002 13.2C10.648 13.2 13.2 10.648 13.2 7.50002C13.2 4.35201 10.648 1.80002 7.50002 1.80002Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+            MapLibre
+          `
+          maplibreOption.addEventListener("click", () => {
+            this.selectProvider("maplibre")
+          })
+
+          this._dropdown.appendChild(mapboxOption)
+          this._dropdown.appendChild(maplibreOption)
+
+          // Toggle dropdown on button click
+          layersButton.addEventListener("click", (e) => {
+            e.stopPropagation()
+            this.toggleDropdown()
+          })
+
+          // Close dropdown when clicking outside
+          document.addEventListener("click", (e) => {
+            if (this._isOpen && this._container && !this._container.contains(e.target as Node)) {
+              this.closeDropdown()
+            }
+          })
+
+          this._container.appendChild(layersButton)
+          this._container.appendChild(this._dropdown)
+
+          // Update active state based on current provider
+          this.updateActiveState()
+
+          return this._container
+        }
+
+        toggleDropdown() {
+          if (this._isOpen) {
+            this.closeDropdown()
+          } else {
+            this.openDropdown()
+          }
+        }
+
+        openDropdown() {
+          if (this._dropdown) {
+            this._dropdown.style.display = "block"
+            this._isOpen = true
+          }
+        }
+
+        closeDropdown() {
+          if (this._dropdown) {
+            this._dropdown.style.display = "none"
+            this._isOpen = false
+          }
+        }
+
+        selectProvider(provider: string) {
+          this.closeDropdown()
+          const event = new CustomEvent("selectMapProvider", { detail: { provider } })
+          window.dispatchEvent(event)
+        }
+
+        updateActiveState() {
+          // This will be called to update the active state based on current provider
+          // We'll implement this when we handle the provider state
+        }
+
+        onRemove() {
+          if (this._container && this._container.parentNode) {
+            this._container.parentNode.removeChild(this._container)
+          }
+          this._map = null
+        }
+      }
+
+      // Add the controls as separate groups
+      mapInstance.addControl(new GlobeViewControl(), "bottom-left")
+      mapInstance.addControl(new LayersControl(), "bottom-left")
 
       // Initialize deck.gl overlay
       deckOverlay.current = new MapboxOverlay({
@@ -355,6 +475,293 @@ const MapView = forwardRef<{ map: mapboxgl.Map | null }, MapViewProps>(
 
       fetchToken()
     }, [])
+
+    // Handle map provider selection from dropdown
+    useEffect(() => {
+      const handleSelectProvider = (e: CustomEvent) => {
+        if (!map.current) return
+
+        const selectedProvider = e.detail.provider
+        if (selectedProvider === mapProvider) return // Already using this provider
+
+        // Save current view state
+        const currentCenter = map.current.getCenter()
+        const currentZoom = map.current.getZoom()
+        const currentPitch = map.current.getPitch()
+        const currentBearing = map.current.getBearing()
+
+        // Set new provider
+        setMapProvider(selectedProvider)
+
+        // Remove current map
+        if (deckOverlay.current) {
+          map.current.removeControl(deckOverlay.current)
+        }
+        map.current.remove()
+        map.current = null
+        setIsMapReady(false)
+
+        // Create new map with the selected provider
+        setTimeout(() => {
+          if (!mapContainer.current) return
+
+          let mapInstance: any
+
+          if (selectedProvider === "maplibre") {
+            // Create MapLibre map
+            mapInstance = new maplibregl.Map({
+              container: mapContainer.current,
+              style: "https://demotiles.maplibre.org/style.json",
+              center: [currentCenter.lng, currentCenter.lat],
+              zoom: currentZoom,
+              pitch: currentPitch,
+              bearing: currentBearing,
+            })
+          } else {
+            // Create Mapbox map
+            if (mapToken) {
+              mapboxgl.accessToken = mapToken
+              mapInstance = new mapboxgl.Map({
+                container: mapContainer.current,
+                style: process.env.NEXT_PUBLIC_MAPBOX_STYLE || "mapbox://styles/mapbox/light-v11",
+                center: [currentCenter.lng, currentCenter.lat],
+                zoom: currentZoom,
+                pitch: currentPitch,
+                bearing: currentBearing,
+                projection: "mercator",
+                attributionControl: false,
+              })
+            }
+          }
+
+          if (mapInstance) {
+            mapInstance.on("load", () => {
+              setMapLoaded(true)
+              setIsMapReady(true)
+              if (onMapLoaded) {
+                onMapLoaded(mapInstance)
+              }
+
+              if (map.current) {
+                const bounds = map.current.getBounds()
+                if (bounds) {
+                  onBoundsChange({
+                    north: bounds.getNorth(),
+                    south: bounds.getSouth(),
+                    east: bounds.getEast(),
+                    west: bounds.getWest(),
+                  })
+                }
+              }
+            })
+
+            if (onMapClick) {
+              mapInstance.on("click", onMapClick)
+            }
+
+            if (onMapMove) {
+              mapInstance.on("moveend", () => {
+                const center = mapInstance.getCenter()
+                const zoom = mapInstance.getZoom()
+                onMapMove(center, zoom)
+              })
+            }
+
+            mapInstance.on("error", (e: any) => {
+              console.error("Map error:", e)
+              if (onError) onError("Map error occurred")
+            })
+
+            mapInstance.on("moveend", () => {
+              if (!map.current) return
+
+              setArcsLoading(true)
+
+              const bounds = map.current.getBounds()
+              debouncedBoundsChange({
+                north: bounds.getNorth(),
+                south: bounds.getSouth(),
+                east: bounds.getEast(),
+                west: bounds.getWest(),
+              })
+            })
+
+            mapInstance.on("zoom", () => {
+              if (map.current) {
+                setCurrentZoom(map.current.getZoom())
+              }
+            })
+
+            // Add navigation control
+            const NavControl = selectedProvider === "maplibre" ? maplibregl.NavigationControl : mapboxgl.NavigationControl
+            const nav = new NavControl({
+              showCompass: false,
+              visualizePitch: false,
+            })
+            mapInstance.addControl(nav, "bottom-left")
+
+            // Add custom controls - Globe View
+            class GlobeViewControl {
+              _map: any = null
+              _container: HTMLDivElement | null = null
+
+              onAdd(map: any) {
+                this._map = map
+                this._container = document.createElement("div")
+                this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group"
+
+                const globalViewButton = document.createElement("button")
+                globalViewButton.className = "mapboxgl-ctrl-icon"
+                globalViewButton.setAttribute("aria-label", "Global View")
+                globalViewButton.innerHTML =
+                  '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.49996 1.80002C4.35194 1.80002 1.79996 4.352 1.79996 7.50002C1.79996 10.648 4.35194 13.2 7.49996 13.2C10.648 13.2 13.2 10.648 13.2 7.50002C13.2 4.352 10.648 1.80002 7.49996 1.80002ZM0.899963 7.50002C0.899963 3.85494 3.85488 0.900024 7.49996 0.900024C11.145 0.900024 14.1 3.85494 14.1 7.50002C14.1 11.1451 11.145 14.1 7.49996 14.1C3.85488 14.1 0.899963 11.1451 0.899963 7.50002Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path><path d="M13.4999 7.89998H1.49994V7.09998H13.4999V7.89998Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path><path d="M7.09991 13.5V1.5H7.89991V13.5H7.09991zM10.375 7.49998C10.375 5.32724 9.59364 3.17778 8.06183 1.75656L8.53793 1.24341C10.2396 2.82218 11.075 5.17273 11.075 7.49998 11.075 9.82724 10.2396 12.1778 8.53793 13.7566L8.06183 13.2434C9.59364 11.8222 10.375 9.67273 10.375 7.49998zM3.99969 7.5C3.99969 5.17611 4.80786 2.82678 6.45768 1.24719L6.94177 1.75281C5.4582 3.17323 4.69969 5.32389 4.69969 7.5 4.6997 9.67611 5.45822 11.8268 6.94179 13.2472L6.45769 13.7528C4.80788 12.1732 3.9997 9.8239 3.99969 7.5z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path><path d="M7.49996 3.95801C9.66928 3.95801 11.8753 4.35915 13.3706 5.19448 13.5394 5.28875 13.5998 5.50197 13.5055 5.67073 13.4113 5.83948 13.198 5.89987 13.0293 5.8056 11.6794 5.05155 9.60799 4.65801 7.49996 4.65801 5.39192 4.65801 3.32052 5.05155 1.97064 5.8056 1.80188 5.89987 1.58866 5.83948 1.49439 5.67073 1.40013 5.50197 1.46051 5.28875 1.62927 5.19448 3.12466 4.35915 5.33063 3.95801 7.49996 3.95801zM7.49996 10.85C9.66928 10.85 11.8753 10.4488 13.3706 9.6135 13.5394 9.51924 13.5998 9.30601 13.5055 9.13726 13.4113 8.9685 13.198 8.90812 13.0293 9.00238 11.6794 9.75643 9.60799 10.15 7.49996 10.15 5.39192 10.15 3.32052 9.75643 1.97064 9.00239 1.80188 8.90812 1.58866 8.9685 1.49439 9.13726 1.40013 9.30601 1.46051 9.51924 1.62927 9.6135 3.12466 10.4488 5.33063 10.85 7.49996 10.85z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>'
+                globalViewButton.addEventListener("click", () => {
+                  if (this._map) {
+                    this._map.flyTo({
+                      center: [0, 20],
+                      zoom: 2,
+                      essential: true,
+                      duration: 1500,
+                    })
+                  }
+                })
+
+                this._container.appendChild(globalViewButton)
+                return this._container
+              }
+
+              onRemove() {
+                if (this._container && this._container.parentNode) {
+                  this._container.parentNode.removeChild(this._container)
+                }
+                this._map = null
+              }
+            }
+
+            // Add custom controls - Layers Dropdown (same as initial)
+            class LayersControl {
+              _map: any = null
+              _container: HTMLDivElement | null = null
+              _dropdown: HTMLDivElement | null = null
+              _isOpen: boolean = false
+
+              onAdd(map: any) {
+                this._map = map
+                this._container = document.createElement("div")
+                this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group"
+                this._container.style.position = "relative"
+
+                const layersButton = document.createElement("button")
+                layersButton.className = "mapboxgl-ctrl-icon"
+                layersButton.setAttribute("aria-label", "Select Map Provider")
+                layersButton.innerHTML =
+                  '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 0.5L0.5 4.5L7.5 8.5L14.5 4.5L7.5 0.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M0.5 10.5L7.5 14.5L14.5 10.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M0.5 7.5L7.5 11.5L14.5 7.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+
+                this._dropdown = document.createElement("div")
+                this._dropdown.className = "map-provider-dropdown"
+                this._dropdown.style.display = "none"
+
+                const mapboxOption = document.createElement("div")
+                mapboxOption.className = "map-provider-option"
+                mapboxOption.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0.900024 7.50002C0.900024 3.85495 3.85495 0.900024 7.50002 0.900024C11.1451 0.900024 14.1 3.85495 14.1 7.50002C14.1 11.1451 11.1451 14.1 7.50002 14.1C3.85495 14.1 0.900024 11.1451 0.900024 7.50002ZM7.50002 1.80002C4.35201 1.80002 1.80002 4.35201 1.80002 7.50002C1.80002 10.648 4.35201 13.2 7.50002 13.2C10.648 13.2 13.2 10.648 13.2 7.50002C13.2 4.35201 10.648 1.80002 7.50002 1.80002Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                  </svg>
+                  Mapbox
+                `
+                mapboxOption.addEventListener("click", () => {
+                  this.selectProvider("mapbox")
+                })
+
+                const maplibreOption = document.createElement("div")
+                maplibreOption.className = "map-provider-option"
+                maplibreOption.innerHTML = `
+                  <svg width="14" height="14" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0.900024 7.50002C0.900024 3.85495 3.85495 0.900024 7.50002 0.900024C11.1451 0.900024 14.1 3.85495 14.1 7.50002C14.1 11.1451 11.1451 14.1 7.50002 14.1C3.85495 14.1 0.900024 11.1451 0.900024 7.50002ZM7.50002 1.80002C4.35201 1.80002 1.80002 4.35201 1.80002 7.50002C1.80002 10.648 4.35201 13.2 7.50002 13.2C10.648 13.2 13.2 10.648 13.2 7.50002C13.2 4.35201 10.648 1.80002 7.50002 1.80002Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                  </svg>
+                  MapLibre
+                `
+                maplibreOption.addEventListener("click", () => {
+                  this.selectProvider("maplibre")
+                })
+
+                this._dropdown.appendChild(mapboxOption)
+                this._dropdown.appendChild(maplibreOption)
+
+                layersButton.addEventListener("click", (e) => {
+                  e.stopPropagation()
+                  this.toggleDropdown()
+                })
+
+                document.addEventListener("click", (e) => {
+                  if (this._isOpen && this._container && !this._container.contains(e.target as Node)) {
+                    this.closeDropdown()
+                  }
+                })
+
+                this._container.appendChild(layersButton)
+                this._container.appendChild(this._dropdown)
+
+                return this._container
+              }
+
+              toggleDropdown() {
+                if (this._isOpen) {
+                  this.closeDropdown()
+                } else {
+                  this.openDropdown()
+                }
+              }
+
+              openDropdown() {
+                if (this._dropdown) {
+                  this._dropdown.style.display = "block"
+                  this._isOpen = true
+                }
+              }
+
+              closeDropdown() {
+                if (this._dropdown) {
+                  this._dropdown.style.display = "none"
+                  this._isOpen = false
+                }
+              }
+
+              selectProvider(provider: string) {
+                this.closeDropdown()
+                const event = new CustomEvent("selectMapProvider", { detail: { provider } })
+                window.dispatchEvent(event)
+              }
+
+              onRemove() {
+                if (this._container && this._container.parentNode) {
+                  this._container.parentNode.removeChild(this._container)
+                }
+                this._map = null
+              }
+            }
+
+            mapInstance.addControl(new GlobeViewControl(), "bottom-left")
+            mapInstance.addControl(new LayersControl(), "bottom-left")
+
+            // Initialize deck.gl overlay
+            deckOverlay.current = new MapboxOverlay({
+              layers: [],
+            })
+            mapInstance.addControl(deckOverlay.current)
+
+            map.current = mapInstance
+          }
+        }, 100)
+      }
+
+      window.addEventListener("selectMapProvider", handleSelectProvider as EventListener)
+
+      return () => {
+        window.removeEventListener("selectMapProvider", handleSelectProvider as EventListener)
+      }
+    }, [mapProvider, mapToken, onBoundsChange, onMapLoaded, onMapClick, onMapMove, onError, debouncedBoundsChange])
+
 
     // Update the MapView component to properly handle viewState changes
     // Only fly to new location when coordinates actually change
@@ -595,6 +1002,8 @@ const MapView = forwardRef<{ map: mapboxgl.Map | null }, MapViewProps>(
             to: obj.attributes.institution_place,
             fromCity,
             fromCountry,
+            fromLat: obj.attributes.latitude,
+            fromLng: obj.attributes.longitude,
             toCity,
             toCountry,
             count: 1,
@@ -1762,7 +2171,21 @@ const MapView = forwardRef<{ map: mapboxgl.Map | null }, MapViewProps>(
                     {objects.length > 0 ? (
                       <div className="space-y-0.5 max-h-40 overflow-y-auto pr-1">
                         {getAllArcs(objects).map((arc, index) => (
-                          <div key={index} className="flex flex-col">
+                          <div
+                            key={index}
+                            className={`flex flex-col rounded-sm p-1 -mx-1 transition-colors ${arc.fromLat && arc.fromLng ? "cursor-pointer hover:bg-slate-100" : ""
+                              }`}
+                            onClick={() => {
+                              if (arc.fromLat && arc.fromLng && map.current) {
+                                map.current.flyTo({
+                                  center: [arc.fromLng, arc.fromLat],
+                                  zoom: 8,
+                                  essential: true,
+                                  duration: 1500
+                                })
+                              }
+                            }}
+                          >
                             <div className="flex justify-between">
                               <span className="truncate max-w-[70%]">
                                 {arc.from} → {arc.to}

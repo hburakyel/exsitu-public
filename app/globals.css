@@ -47,6 +47,7 @@
   * {
     @apply font-mono text-sm font-normal;
   }
+
   body {
     @apply bg-background text-foreground;
     margin: 0;
@@ -54,6 +55,7 @@
     overflow: hidden;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
+
   html,
   body {
     height: 100%;
@@ -229,6 +231,7 @@ img {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -267,13 +270,16 @@ img {
 .image-gallery-enter {
   opacity: 0;
 }
+
 .image-gallery-enter-active {
   opacity: 1;
   transition: opacity 300ms;
 }
+
 .image-gallery-exit {
   opacity: 1;
 }
+
 .image-gallery-exit-active {
   opacity: 0;
   transition: opacity 300ms;
@@ -334,6 +340,7 @@ img {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
@@ -350,6 +357,7 @@ img {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -365,15 +373,17 @@ img {
 /* Add these styles at the end of the file to customize the Mapbox controls */
 
 /* Update the map control styles to have white background */
-/* Style navigation controls to match header */
-.mapboxgl-ctrl-group {
+/* Style navigation controls to match header - works for both Mapbox and MapLibre */
+.mapboxgl-ctrl-group,
+.maplibregl-ctrl-group {
   background-color: white !important;
   border-radius: 6px !important;
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
 }
 
-.mapboxgl-ctrl-group button {
+.mapboxgl-ctrl-group button,
+.maplibregl-ctrl-group button {
   width: 28px !important;
   height: 28px !important;
   margin: 0 !important;
@@ -382,23 +392,28 @@ img {
   border: none !important;
 }
 
-.mapboxgl-ctrl-group button:hover {
+.mapboxgl-ctrl-group button:hover,
+.maplibregl-ctrl-group button:hover {
   background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
-.mapboxgl-ctrl-group button span {
-  filter: none !important; /* Remove invert filter */
+.mapboxgl-ctrl-group button span,
+.maplibregl-ctrl-group button span {
+  filter: none !important;
+  /* Remove invert filter */
 }
 
 /* Style the globe button */
-.mapboxgl-ctrl-globe {
+.mapboxgl-ctrl-globe,
+.maplibregl-ctrl-globe {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
 }
 
 /* Style the globe icon */
-.mapboxgl-ctrl-globe svg {
+.mapboxgl-ctrl-globe svg,
+.maplibregl-ctrl-globe svg {
   width: 16px !important;
   height: 16px !important;
   stroke: black !important;
@@ -410,10 +425,33 @@ img {
   margin-top: 5px !important;
 }
 
-/* Hide Mapbox logo */
-.mapboxgl-ctrl-logo {
+/* Hide Mapbox and MapLibre logos */
+.mapboxgl-ctrl-logo,
+.maplibregl-ctrl-logo {
   display: none !important;
 }
+
+/* Hide attribution controls */
+.mapboxgl-ctrl-attrib,
+.maplibregl-ctrl-attrib {
+  display: none !important;
+}
+
+/* Ensure consistent positioning for bottom-left controls */
+.mapboxgl-ctrl-bottom-left,
+.maplibregl-ctrl-bottom-left {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  margin: 0 0 10px 10px !important;
+}
+
+.mapboxgl-ctrl-bottom-left .mapboxgl-ctrl,
+.maplibregl-ctrl-bottom-left .maplibregl-ctrl {
+  margin: 0 !important;
+}
+
 
 /* Arc tooltip styles */
 .arc-tooltip {
@@ -423,7 +461,8 @@ img {
   padding: 0 !important;
   max-width: 300px !important;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-  z-index: 1000 !important; /* Ensure tooltip is above other elements */
+  z-index: 1000 !important;
+  /* Ensure tooltip is above other elements */
 }
 
 .arc-tooltip .mapboxgl-popup-content {
@@ -481,7 +520,8 @@ img {
 
 .flex-1 {
   flex: 1;
-  min-height: 0; /* Important for Safari */
+  min-height: 0;
+  /* Important for Safari */
 }
 
 /* Ensure consistent object-fit behavior */
@@ -498,6 +538,7 @@ img {
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -518,6 +559,7 @@ img {
   0% {
     background-position: 100% 0;
   }
+
   100% {
     background-position: -100% 0;
   }
@@ -629,6 +671,76 @@ img {
 }
 
 /* Improve separation between items without borders */
-.space-y-2 > * + * {
+.space-y-2>*+* {
   margin-top: 0.5rem !important;
+}
+
+/* Custom map control styles for consistent icon centering */
+.mapboxgl-ctrl-icon,
+.maplibregl-ctrl-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 29px !important;
+  height: 29px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background-color: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+.mapboxgl-ctrl-icon:hover,
+.maplibregl-ctrl-icon:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.mapboxgl-ctrl-icon svg,
+.maplibregl-ctrl-icon svg {
+  width: 15px !important;
+  height: 15px !important;
+  display: block !important;
+}
+
+/* Map provider dropdown menu */
+.map-provider-dropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 8px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 4px;
+  min-width: 140px;
+  z-index: 1000;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.map-provider-option {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #333;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.map-provider-option:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.map-provider-option.active {
+  background-color: rgba(0, 0, 0, 0.08);
+  font-weight: 500;
+}
+
+.map-provider-option svg {
+  margin-right: 8px;
+  width: 14px;
+  height: 14px;
 }
