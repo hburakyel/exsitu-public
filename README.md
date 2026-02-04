@@ -21,7 +21,7 @@ Ex Situ employs a decoupled, scalable architecture designed for high-volume data
 
 ## Scale & Provenance
 
-* **132,854+ Resolved Entries:** Successfully geolocated museum objects from diverse international collections across 177 countries.
+* **132,854+ Resolved Entries:** Successfully geolocated museum objects whose provenance spans 177 countries, primarily held in collections based in Germany and New York.
 * **Spatial Search Logic:** Moving beyond keyword-based search toward a model where cultural heritage is discovered through geographic and historical relationships.
 * **Interoperability:** Engineered to "resolve" non-standardized metadata across diverse institutional web domains into a unified schema.
 
