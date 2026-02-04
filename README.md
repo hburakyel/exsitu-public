@@ -1,37 +1,56 @@
-Ex Situ: Relational Spatial Index
+# Ex Situ: Relational Spatial Index
 
-https://exsitu.app
+[**ExSitu.app**](https://exsitu.app)
 
-Ex Situ is a spatial digital commons platform and geospatial infrastructure designed to resolve fragmented cultural heritage metadata into a unified, machine-readable index. By transforming siloed institutional hyperlinks into standardized geospatial data, Ex Situ enables the visualization and analysis of artifact movement across global collections.
+**Ex Situ** is a high-performance geospatial infrastructure designed to resolve fragmented cultural heritage metadata into a unified, machine-readable **Spatial Digital Commons**. 
 
-Architecture
+By transforming siloed institutional hyperlinks into standardized geospatial data, Ex Situ enables the visualization and analysis of artifact displacement through a decentralized discovery layer.
 
-Ex Situ employs a decoupled architecture designed for high-throughput data resolution and low-latency visualization:
+---
 
-Modular ETL Pipeline: A custom Python-based Extract, Transform, Load (ETL) pipeline that ingests heterogeneous institutional metadata and resolves them into standardized geospatial coordinates.
+## System Architecture
 
-Headless Backend: Powered by Strapi v4 (Community Edition) on a PostgreSQL/PostGIS database, optimized for complex relational and spatial queries.
+Ex Situ employs a decoupled, scalable architecture designed for high-volume data resolution:
 
-High-Performance Frontend: A Next.js application utilizing Deck.gl for large-scale WebGL-based geospatial rendering.
+* **Relational Index Engine (ETL):** A modular Python-based pipeline that ingests heterogeneous metadata, performing fuzzy geocoding and provenance resolution into precise spatial coordinates.
+* **Spatial Backend:** A **PostGIS**-enabled database optimized for multilevel spatial aggregation and complex relational queries.
+* **Visualization Layer:** A **Next.js** application utilizing **Deck.gl** and **MapLibre GL JS** for GPU-accelerated rendering of massive datasets and provenance arcs.
+* **Autonomous Infrastructure:** Fully self-hosted on independent bare-metal servers (Hetzner) to ensure data sovereignty and resistance to proprietary platform enclosure.
 
-Hosting: Fully deployed on Hetzner to ensure data sovereignty and compliance with open-source digital commons principles.
+---
 
-Scale & Provenance
+## Scale & Provenance
 
-The infrastructure is built to handle significant institutional data loads:
+* **132,854+ Resolved Entries:** Successfully geolocated museum objects from diverse international collections across 177 countries.
+* **Spatial Search Logic:** Moving beyond keyword-based search toward a model where cultural heritage is discovered through geographic and historical relationships.
+* **Interoperability:** Engineered to "resolve" non-standardized metadata across diverse institutional web domains into a unified schema.
 
-132,854+ Entries: Successfully resolved and geolocated museum objects from diverse international collections.
+---
 
-Relational Discovery: Functions as a decentralized discovery layer, allowing users to navigate artifacts, geolocated hpyherlinks not just by institution, but by their spatial and historical relationships.
+## Tech Stack
 
-Tech Stack
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | Next.js (App Router), TypeScript, Radix UI |
+| **Mapping** | MapLibre GL JS & Deck.gl (WebGL/WebGPU) |
+| **Backend** | Strapi v4 (Headless CMS), Node.js |
+| **Database** | PostgreSQL + PostGIS + H3 Indexing |
+| **Processing** | Python (GeoPandas, Nominatim, Custom ETL) |
+| **License** | **GNU AGPLv3** |
 
-Frontend	Next.js (App Router), TypeScript, Deck.gl
-Styling	Radix UI, Tailwind CSS
-Backend	Strapi v4, Node.js
-Database	PostgreSQL + PostGIS
-Pipeline	Python (Data Normalization & Resolution)
-License	MIT License (Open Source)
+---
 
-Note: Ex Situ is currently transitioning its mapping engine to ensure full alignment with open-source digital commons principles. While the initial prototype relies on Mapbox GL JS, the development roadmap includes a migration to MapLibre GL JS and self-hosted vector tiles. This shift is designed to ensure the platform remains free of proprietary "pay-per-load" dependencies and maintains 100% data sovereignty for cultural heritage research.
+## Licensing & The Spatial Digital Commons
 
+Ex Situ is committed to the principles of open-knowledge and digital autonomy. To protect the project from proprietary enclosure, it is licensed under the **GNU Affero General Public License v3 (AGPLv3)**.
+
+**Why AGPLv3?**
+
+* **Transparency:** Any enhancements to the core engine must be shared back with the community.
+* **Anti-Siloing:** Prevents the "SaaS loophole" where the software is used to build closed, private platforms.
+* **Data Sovereignty:** Ensures that the infrastructure connecting our global heritage remains open and interoperable.
+
+---
+
+### Note on Development
+Ex Situ is currently transitioning its mapping engine to **MapLibre GL JS** to ensure a 100% open-source stack, free from proprietary "pay-per-load" dependencies and maintaining full data sovereignty.
