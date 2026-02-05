@@ -1,6 +1,6 @@
 # Ex Situ: Relational Spatial Index
 
-[**ExSitu.app**](https://exsitu.app)
+[**exsitu.app**](https://exsitu.app)
 
 **Ex Situ** is a high-performance geospatial infrastructure designed to resolve fragmented cultural heritage metadata into a unified, machine-readable **Spatial Digital Commons**. 
 
