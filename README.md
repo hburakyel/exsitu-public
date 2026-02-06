@@ -2,7 +2,7 @@
 
 [**exsitu.app**](https://exsitu.app)
 
-**Ex Situ** is a high-performance geospatial infrastructure designed to resolve fragmented cultural heritage metadata into a unified, machine-readable **Spatial Digital Commons**. 
+**Ex Situ** is a geospatial infrastructure designed to resolve fragmented cultural heritage metadata into a unified, machine-readable **Spatial Digital Commons**. 
 
 By transforming siloed institutional hyperlinks into standardized geospatial data, Ex Situ enables the visualization and analysis of artifact displacement through a decentralized discovery layer.
 
